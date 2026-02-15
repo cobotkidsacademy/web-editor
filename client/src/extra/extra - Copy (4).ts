@@ -124,7 +124,7 @@ class App extends Component {
 
     var element = document.createElement('a');
     element.setAttribute('href', "data:text/plain;charset=UTF-8," + encodeURIComponent(documentContents));
-    element.setAttribute('download', "codeSoumyadeeptaDas.txt");
+    element.setAttribute('download', "index.html");
     element.style.display = 'none';
     document.body.appendChild(element);
     element.click(); // simulate click

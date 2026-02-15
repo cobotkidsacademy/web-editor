@@ -13,7 +13,8 @@
     "react-scripts": "2.1.3"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set NODE_OPTIONS=--openssl-legacy-provider && npx --yes react-scripts@2.1.3 start",
+    "dev": "set NODE_OPTIONS=--openssl-legacy-provider && npx --yes react-scripts@2.1.3 start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

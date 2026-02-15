@@ -10,7 +10,6 @@
     "start": "concurrently \"npm run server\" \"npm run client\""
   },
   "keywords": [],
-  "author": "Soumyadeepta Das-18BCE1350",
   "engines": {
     "node": "12.17.x"
   },

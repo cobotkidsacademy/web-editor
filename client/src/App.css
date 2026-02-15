@@ -1,140 +1,263 @@
 html {
   box-sizing: border-box;
-  
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: inherit;
   margin: 0;
   padding: 0;
 }
 
-/*header section styles*/
-.headersection{
-  content: attr(title);
-  align-items: center;
-  text-align: center;
-  font-size: larger;
-  padding: 16px;
-  background-color: #181d1c;
-  color: #fafafa;
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #1e1e2c;
 }
 
-/* section heading styles */
-.section-heading {
-  height: 40px;
-  content: attr(title);
+/* Toolbar: CSS/JS toggle + Download */
+.toolbar {
   display: flex;
   align-items: center;
-  padding-left: 20px;
-  font-size: 18px;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background-color: #181d1c;
   color: #fafafa;
-  background-color: #1E1E2C;
-  border-width:thin;
-  border-bottom-style:solid;
-  border-color:#1E1E2C;
+  flex-shrink: 0;
 }
 
-
-/* file explorer section styles */
-.fileexplorersection{
-  float:left;
-  width: 12%;
-  top:0;
-  bottom:0;
-  height:100vh;
-  background-color:#2C2C32;
-  color:#fafafa;
-  border-width:thin;
-  border-right-style:solid;
-  border-color: aliceblue;
+.toolbar-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.filelist{
-  padding-top: 20px;
-  padding-left: 35px ;
+.toolbar-label {
+  font-size: 14px;
+  margin-right: 4px;
 }
 
-ul li{
-  text-decoration: none;
+.toolbar-toggle button {
+  padding: 6px 14px;
+  font-size: 14px;
+  border: 1px solid #4d4d5c;
+  background-color: #2c2c32;
+  color: #fafafa;
   cursor: pointer;
-  color: #fafafa;
+  border-radius: 4px;
 }
 
-ul li:hover{
-  background-color: #4d4d5c;
+.toolbar-toggle button:hover {
+  background-color: #3d3d4a;
 }
 
-p{
-  padding-left: 5px;
-  padding-right:5px;
-  font-size: smaller;
+.toolbar-toggle button.active {
+  background-color: DodgerBlue;
+  border-color: DodgerBlue;
 }
 
-#downloadButton{
-  margin-left: 20px;;
+.download-btn {
+  padding: 6px 14px;
+  font-size: 14px;
   background-color: DodgerBlue;
   border: none;
   color: white;
-  padding: 6px 6px;
   cursor: pointer;
-  align-items: center;
-  text-align: center;
-  font-size: 16px;
-  position:absolute;
-  bottom:30px;
+  border-radius: 4px;
 }
 
+.download-btn:hover {
+  opacity: 0.9;
+}
 
-/* code editor section styles */
-.codeeditorsection {
-  float:left;
-  width: 43%;
-  background-color: #1E1E2C;
-  border-width:thin;
-  border-right-style:solid;
-  border-color: aliceblue;
+.lms-save-status {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-left: 8px;
+}
+.lms-save-status.saving {
+  color: #fbbf24;
+}
+.lms-save-status.saved {
+  color: #34d399;
+}
+.lms-save-status.error {
+  color: #f87171;
+}
+
+/* Main content: preview left, editors right */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Editors stack on the left (HTML + CSS or JS) */
+.editors-loading {
+  flex: 1;
+  min-width: 200px;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.editors-container {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-right: 1px solid #2c2c32;
+}
+
+/* Preview on the right */
+.liveviewsection {
+  flex: 1;
+  min-width: 200px;
+  font-size:21px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #1e1e2c;
 }
 
 .code-editor {
-  height: 31.6vh;
-  overflow: hidden;
-  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #1e1e2c;
+}
+
+.code-editor.html-editor {
+  min-height: 200px;
+}
+
+.code-editor.css-editor,
+.code-editor.js-editor {
+  min-height: 180px;
+  border-top: 1px solid #2c2c32;
 }
 
 .editor-header {
-  height: 30px;
-  content: attr(title);
+  height: 32px;
   display: flex;
   align-items: center;
-  padding-left: 20px;
+  padding-left: 16px;
   font-size: 14px;
   color: #fafafa;
+  background-color: #252535;
+  flex-shrink: 0;
 }
 
 .react-codemirror2 {
-  height:100% !important;
-  
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
-.CodeMirror{
-  height:100% !important;
+.CodeMirror {
+  height: 100% !important;
+  font-size: 21px !important;
+}
+.CodeMirror pre.CodeMirror-line,
+.CodeMirror .CodeMirror-line {
+  font-size: 21px !important;
+}
+.CodeMirror .CodeMirror-linewidget,
+.CodeMirror .CodeMirror-gutter-wrapper {
+  font-size: 21px !important;
 }
 
+/* VS Code–like syntax highlighting (blue tags, etc.) */
+.CodeMirror .cm-tag {
+  color: #569cd6 !important;
+}
+.CodeMirror .cm-bracket {
+  color: #808080 !important;
+}
+.CodeMirror .cm-attribute {
+  color: #9cdcfe !important;
+}
+.CodeMirror .cm-string {
+  color: #ce9178 !important;
+}
+.CodeMirror .cm-meta {
+  color: #569cd6 !important;
+}
+.CodeMirror .cm-qualifier {
+  color: #d7ba7d !important;
+}
+.CodeMirror .cm-property {
+  color: #9cdcfe !important;
+}
+.CodeMirror .cm-atom {
+  color: #569cd6 !important;
+}
+.CodeMirror .cm-number {
+  color: #b5cea8 !important;
+}
+.CodeMirror .cm-def {
+  color: #dcdcaa !important;
+}
+.CodeMirror .cm-keyword {
+  color: #c586c0 !important;
+}
+.CodeMirror .cm-variable {
+  color: #9cdcfe !important;
+}
+.CodeMirror .cm-comment {
+  color: #6a9955 !important;
+}
 
-/* live view section styles */
-.liveviewsection {
-  float:left;
-  height:100vh;
-  width:45%;
-  overflow: hidden;
-  background-color: #1E1E2C;
-  border-width: medium;
+/* Remove red error highlight – use normal text color */
+.CodeMirror .cm-error,
+.CodeMirror .cm-invalidchar {
+  color: inherit !important;
+  background: none !important;
+  border-bottom: none !important;
+}
+
+/* Autocomplete dropdown (show-hint) – dark theme */
+.CodeMirror-hints {
+  background-color: #252535 !important;
+  border: 1px solid #3d3d4a !important;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.CodeMirror-hint {
+  color: #fafafa !important;
+  padding: 4px 8px;
+}
+.CodeMirror-hint-active {
+  background-color: #569cd6 !important;
+  color: #fff !important;
+}
+
+.section-heading {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  font-size: 16px;
+  color: #fafafa;
+  background-color: #252535;
+  border-bottom: 1px solid #2c2c32;
+  flex-shrink: 0;
 }
 
 .iframe {
+  flex: 1;
   width: 100%;
-  height: 100%;
+  min-height: 0;
   background-color: #fafafa;
+  border: none;
 }

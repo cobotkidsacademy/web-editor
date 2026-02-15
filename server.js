@@ -31,8 +31,8 @@ app.post('/update-editor', (req, res) => {
   res.status(200).send('OK');
 });
 
-//backend on port 500, or can be defined in .env file
-app.set('port', process.env.PORT || 5000);
+//backend port: from .env or default 5002 (avoid conflict with 5000/5001)
+app.set('port', process.env.PORT || 5002);
 const server = app.listen(app.get('port'), () => {
   console.log(`Express running → PORT ${server.address().port}`);
 });
