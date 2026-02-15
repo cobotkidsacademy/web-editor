@@ -1,66 +1,41 @@
-# Online Code Editor using React and NodeJS, with collaboration features
+<div align="center">
 
+# Editor.io
+## https://editor.soumya-jit.tech/
 
+</div>
 
+## Online code editor for HTML, CSS and Javascript to discover frontend code
 
+<div align="center">
+  <img alt="Demo" src="./src/Assets/web.gif"/>
+</div>
 
-## Project hosted on Github pages (link):
-https://soumyadeeptadas.github.io/dyte-code-editor/
+### Features:
 
-- frontend hosted in Githubpages, and backend api hosted on heroku for live demo app
-- above link can be opened by multiple users to collaborate.
+- No installation, work online and build web pages.
+- Auto Save of all your work
+- Supports JQuery
+- Autoclose of tags and brackets
+- Live Preview
 
+## Online Markdown editor for generating Readme Files
 
+<div align="center">
+  <img alt="Demo" src="./src/Assets/markdown.gif"/>
+</div>
 
-## Features:
-- `File explorer`, to select from html, css and js file of the project and to load to code editor window
-- Text highlighted `Code Editor`, with line numbers and error detection, and dynamic rendering.
-- `Live View` dynamically renders the project from running the HTML, css and JS, providing seamless and fast development ability
-- `Collaboration Features`, the pplication can be run by different users at the same time to collaborate on the same project and edit and develop simulatenously
-- `Download Code`, downloads the 3 files in a siingle master file into local system, for further use
+## Features
 
+- GFM
+- Supports Html Tags
+- Custom toolbar to make editing easier
+- Live Preview
+- Auto save of work
+- Download the file Readme.md file
 
-## Getting Started
+### Show your support
 
-1. Clone this repository and `cd` into it.
-2. Execute `npm install` to download dependencies of the server side.
-3. `cd` into the client folder, run `npm install`  to install client side dependencies.
-4. `cd back to root of project` and Run `npm run start` to start the Express server.
-6. Open http://localhost:3000 in your browser.
+Give a ⭐ if you like this website!
 
-
-## Project and folder structure info
-- [Here](https://github.com/soumyadeeptadas/OnlineCodeEditor-SoumyadeeptaDas-18BCE1350/blob/master/Folder%20Structure%20and%20Information.txt)
-
-## Pre-requisites
-
-- [Node.js](https://nodejs.org/en) and npm
-
-
-## demo video: 
-- https://drive.google.com/file/d/1iiQ7tG3mospqjq7_Ha1klQWQV8f_YXMh/view?usp=sharing
-
-## Screenshots
-
-#### HTML editor selected from file selector
-![screenshot](https://github.com/soumyadeeptadas/OnlineCodeEditor-SoumyadeeptaDas-18BCE1350/blob/master/screenshots/Screenshot%20(1365).png)
-
-#### CSS editor selected from file selector
-![screenshot](https://github.com/soumyadeeptadas/OnlineCodeEditor-SoumyadeeptaDas-18BCE1350/blob/master/screenshots/Screenshot%20(1366).png)
-
-#### JS editor selected from file selector
-![screenshot](https://github.com/soumyadeeptadas/OnlineCodeEditor-SoumyadeeptaDas-18BCE1350/blob/master/screenshots/Screenshot%20(1367).png)
-
-#### All 3 editor stacked on first load, further one editor can be picked from file selector
-![screenshot](https://github.com/soumyadeeptadas/OnlineCodeEditor-SoumyadeeptaDas-18BCE1350/blob/master/screenshots/Screenshot%20(1364).png)
-
-
-## Built With
-- [NodeJs](https://nodejs.org)
-- [React](https://reactjs.org)
-- [Pusher Channels](https://pusher.com/channels)
-- [Codemirror](https://codemirror.net/)
-
-## Licences
-
-[MIT](https://opensource.org/licenses/MIT)
+<a href="https://www.buymeacoffee.com/soumyajit4419" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-violet.png" alt="Buy Me A Coffee" height= "60px" width= "217px" ></a>
