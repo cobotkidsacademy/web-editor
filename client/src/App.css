@@ -87,7 +87,7 @@ html {
   color: #f87171;
 }
 
-/* Main content: preview left, editors right */
+/* Main content: editors left, preview right, resizable */
 .main-content {
   flex: 1;
   display: flex;
@@ -96,10 +96,9 @@ html {
   overflow: hidden;
 }
 
-/* Editors stack on the left (HTML + CSS or JS) */
 .editors-loading {
   flex: 1;
-  min-width: 200px;
+  min-width: 150px;
   min-height: 0;
   display: flex;
   align-items: center;
@@ -108,21 +107,47 @@ html {
   font-size: 14px;
 }
 
-.editors-container {
-  flex: 1;
+.editors-wrapper {
   min-width: 200px;
   display: flex;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  border-right: 1px solid #2c2c32;
+}
+
+/* Resize handle between editor and preview */
+.resize-handle {
+  flex-shrink: 0;
+  background: #2c2c32;
+  transition: background 0.15s;
+}
+.resize-handle:hover {
+  background: #569cd6;
+}
+.resize-handle-vertical {
+  width: 6px;
+  cursor: ew-resize;
+  min-width: 6px;
+}
+.resize-handle-horizontal {
+  height: 6px;
+  cursor: ns-resize;
+  min-height: 6px;
+  flex-shrink: 0;
+}
+
+.editors-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Preview on the right */
 .liveviewsection {
-  flex: 1;
-  min-width: 200px;
-  font-size:21px;
+  min-width: 150px;
+  font-size: 14px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -130,21 +155,21 @@ html {
 }
 
 .code-editor {
-  flex: 1;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   background-color: #1e1e2c;
+  min-height: 0;
 }
 
 .code-editor.html-editor {
-  min-height: 200px;
+  flex: 1 1 auto;
+  min-height: 150px;
 }
 
 .code-editor.css-editor,
 .code-editor.js-editor {
-  min-height: 180px;
   border-top: 1px solid #2c2c32;
+  overflow: hidden;
 }
 
 .editor-header {
@@ -220,10 +245,13 @@ html {
 
 /* Remove red error highlight – use normal text color */
 .CodeMirror .cm-error,
-.CodeMirror .cm-invalidchar {
+.CodeMirror .cm-invalidchar,
+.CodeMirror .cm-link,
+.CodeMirror span.cm-error {
   color: inherit !important;
   background: none !important;
   border-bottom: none !important;
+  text-decoration: none !important;
 }
 
 /* Autocomplete dropdown (show-hint) – dark theme */
@@ -260,4 +288,33 @@ html {
   min-height: 0;
   background-color: #fafafa;
   border: none;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+  .editors-wrapper {
+    flex: 1 1 auto !important;
+    min-height: 40vh;
+  }
+  .liveviewsection {
+    flex: 1 1 auto !important;
+    min-height: 40vh;
+  }
+  .resize-handle-vertical {
+    width: 100%;
+    height: 6px;
+    cursor: ns-resize;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    flex-wrap: wrap;
+  }
+  .toolbar-toggle {
+    flex-wrap: wrap;
+  }
 }

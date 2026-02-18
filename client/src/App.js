@@ -9,8 +9,9 @@ import "codemirror/theme/material.css";
 import "codemirror/addon/hint/show-hint.css";
 
 const EditorPanels = lazy(() => import("./EditorPanels"));
+const ResizeHandle = lazy(() => import("./ResizeHandle"));
 
-// Parse URL query params (for LMS embed: studentId, courseId, topicId, topicName, levelId, apiBase, authToken, savedProjectId)
+// Parse URL query params for LMS integration (studentId, courseId, courseName, levelId, levelName, topicId, topicName, apiBase, authToken, savedProjectId)
 function getLmsParams() {
   if (typeof window === "undefined" || !window.location.search) return null;
   const params = new URLSearchParams(window.location.search);
@@ -18,12 +19,25 @@ function getLmsParams() {
   const authToken = params.get("authToken");
   const studentId = params.get("studentId");
   const courseId = params.get("courseId");
+  const courseName = params.get("courseName") ? decodeURIComponent(params.get("courseName")) : null;
   const topicId = params.get("topicId");
   const topicName = params.get("topicName") ? decodeURIComponent(params.get("topicName")) : null;
   const levelId = params.get("levelId");
+  const levelName = params.get("levelName") ? decodeURIComponent(params.get("levelName")) : null;
   const projectId = params.get("savedProjectId") || params.get("projectId");
   if (!apiBase || !authToken || !studentId || !courseId || !topicId || !levelId) return null;
-  return { apiBase, authToken, studentId, courseId, topicId, topicName: topicName || "Project", levelId, projectId };
+  return {
+    apiBase,
+    authToken,
+    studentId,
+    courseId,
+    courseName: courseName || "",
+    topicId,
+    topicName: topicName || "Project",
+    levelId,
+    levelName: levelName || "",
+    projectId
+  };
 }
 
 class App extends Component {
@@ -36,6 +50,7 @@ class App extends Component {
       css: "",
       js: "",
       secondEditor: "css",
+      editorPreviewSplit: 50,
       lmsProjectId: null,
       lmsSaveStatus: null, // null | "saving" | "saved" | "error"
       lmsContext: null
@@ -44,7 +59,7 @@ class App extends Component {
     this.pusher = null;
     this.channel = null;
     this.lmsSaveTimer = null;
-    this.LMS_SAVE_DELAY_MS = 2500;
+    this.LMS_SAVE_DELAY_MS = 1500;
   }
 
   componentDidUpdate() {
@@ -89,11 +104,13 @@ class App extends Component {
 
     const loadFromProject = (project) => {
       const data = project.project_data;
-      if (data && (data.html != null || data.css != null || data.js != null)) {
+      const hasWebData = data && (data.html != null || data.css != null || data.js != null);
+      const hasLegacyHtml = project.project_html;
+      if (hasWebData || hasLegacyHtml) {
         this.setState({
-          html: data.html != null ? data.html : "",
-          css: data.css != null ? data.css : "",
-          js: data.js != null ? data.js : "",
+          html: hasWebData && data.html != null ? data.html : (project.project_html || ""),
+          css: hasWebData && data.css != null ? data.css : "",
+          js: hasWebData && data.js != null ? data.js : (project.project_code || ""),
           lmsProjectId: project.id
         });
       }
@@ -136,12 +153,14 @@ class App extends Component {
       headers: { Authorization: `Bearer ${authToken}`, "Content-Type": "application/json" }
     });
 
+    const editorUrl = typeof window !== "undefined" ? `${window.location.origin}${window.location.pathname}` : "";
     const body = {
       topic_id: topicId,
       course_level_id: levelId,
       course_id: courseId,
       project_name: topicName && String(topicName).trim() ? topicName : "Project",
       editor_type: "inter",
+      editor_url: editorUrl,
       project_data: { html: html || "", css: css || "", js: js || "" },
       project_type: "html",
       file_format: "html",
@@ -235,14 +254,28 @@ class App extends Component {
     document.body.removeChild(element);
   }
 
+  handleEditorPreviewResize = (delta, { deltaX, deltaY } = {}) => {
+    this.setState((prev) => {
+      const container = document.querySelector(".main-content");
+      if (!container) return prev;
+      const isRow = window.innerWidth > 768;
+      const size = isRow ? container.offsetWidth : container.offsetHeight;
+      const d = isRow ? (deltaX ?? delta) : (deltaY ?? -delta);
+      const deltaPercent = (d / size) * 100;
+      let next = prev.editorPreviewSplit + deltaPercent;
+      next = Math.max(25, Math.min(75, next));
+      return { editorPreviewSplit: next };
+    });
+  };
+
   render() {
-    const { html, js, css, secondEditor, lmsSaveStatus, lmsContext } = this.state;
+    const { html, js, css, secondEditor, editorPreviewSplit, lmsSaveStatus, lmsContext } = this.state;
 
     return (
       <div className="App">
         <div className="toolbar">
           <div className="toolbar-toggle">
-            <span className="toolbar-label">Second editor:</span>
+            <span className="toolbar-label">Switch editor:</span>
             <button
               className={secondEditor === "css" ? "active" : ""}
               onClick={() => this.setState({ secondEditor: "css" })}
@@ -270,21 +303,23 @@ class App extends Component {
 
         <div className="main-content">
           <Suspense fallback={<div className="editors-loading">Loading editor…</div>}>
-            <EditorPanels
-              html={html}
-              css={css}
-              js={js}
-              secondEditor={secondEditor}
-              onHtmlChange={(html) => this.setState({ html }, () => this.syncUpdates())}
-              onCssChange={(css) => this.setState({ css }, () => this.syncUpdates())}
-              onJsChange={(js) => this.setState({ js }, () => this.syncUpdates())}
-            />
+            <div className="editors-wrapper" style={{ flex: `0 0 ${editorPreviewSplit}%` }}>
+              <EditorPanels
+                html={html}
+                css={css}
+                js={js}
+                secondEditor={secondEditor}
+                onHtmlChange={(html) => this.setState({ html }, () => this.syncUpdates())}
+                onCssChange={(css) => this.setState({ css }, () => this.syncUpdates())}
+                onJsChange={(js) => this.setState({ js }, () => this.syncUpdates())}
+              />
+            </div>
+            <ResizeHandle orientation="vertical" onResize={this.handleEditorPreviewResize} />
+            <section className="liveviewsection" style={{ flex: `1 1 ${100 - editorPreviewSplit}%` }}>
+              <div className="section-heading">Preview</div>
+              <iframe title="result" className="iframe" ref="iframe" />
+            </section>
           </Suspense>
-
-          <section className="liveviewsection">
-            <div className="section-heading">Preview</div>
-            <iframe title="result" className="iframe" ref="iframe" />
-          </section>
         </div>
       </div>
     );
