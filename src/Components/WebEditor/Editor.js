@@ -4,6 +4,7 @@ import "codemirror/lib/codemirror.css";
 import "codemirror/theme/material.css";
 import { Controlled as CodeMirror } from "react-codemirror2";
 import "codemirror/mode/xml/xml";
+import "codemirror/mode/htmlmixed/htmlmixed";
 import "codemirror/mode/javascript/javascript";
 import "codemirror/mode/css/css";
 import "codemirror/addon/edit/closetag";
@@ -32,19 +33,17 @@ function htmlEnterKeyHandler(cm) {
   cm.setCursor({ line: line + 1, ch: innerIndent.length });
 }
 
-const VOID_TAGS = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"];
-
 function Editor(props) {
   const mode = props.launguage;
   const isHtml = mode === "xml";
   const options = {
-    mode: mode,
+    mode: isHtml ? "htmlmixed" : mode,
     theme: "material",
     lineNumbers: true,
     scrollbarStyle: "null",
     lineWrapping: true,
     indentUnit: 2,
-    autoCloseTags: isHtml ? { dontCloseTags: VOID_TAGS } : true,
+    autoCloseTags: true,
     matchTags: true,
     autoCloseBrackets: true,
     matchBrackets: true,
