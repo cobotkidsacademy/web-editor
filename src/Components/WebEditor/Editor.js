@@ -32,6 +32,8 @@ function htmlEnterKeyHandler(cm) {
   cm.setCursor({ line: line + 1, ch: innerIndent.length });
 }
 
+const VOID_TAGS = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"];
+
 function Editor(props) {
   const mode = props.launguage;
   const isHtml = mode === "xml";
@@ -42,7 +44,7 @@ function Editor(props) {
     scrollbarStyle: "null",
     lineWrapping: true,
     indentUnit: 2,
-    autoCloseTags: true,
+    autoCloseTags: isHtml ? { dontCloseTags: VOID_TAGS } : true,
     matchTags: true,
     autoCloseBrackets: true,
     matchBrackets: true,

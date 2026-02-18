@@ -49,6 +49,7 @@ function LaunguageManager() {
   const [lmsSaveStatus, setLmsSaveStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const saveTimerRef = useRef(null);
+  const latestRef = useRef({ html: "", css: "", js: "" });
 
   const cssURL = getBlobURL(css, "text/css");
   const jsURL = getBlobURL(js, "text/javascript");
@@ -78,9 +79,13 @@ function LaunguageManager() {
       const hasWebData = data && (data.html != null || data.css != null || data.js != null);
       const hasLegacyHtml = project.project_html;
       if (hasWebData || hasLegacyHtml) {
-        setHtml(hasWebData && data.html != null ? data.html : (project.project_html || ""));
-        setCss(hasWebData && data.css != null ? data.css : "");
-        setJs(hasWebData && data.js != null ? data.js : (project.project_code || ""));
+        const h = hasWebData && data.html != null ? data.html : (project.project_html || "");
+        const c = hasWebData && data.css != null ? data.css : "";
+        const j = hasWebData && data.js != null ? data.js : (project.project_code || "");
+        latestRef.current = { html: h, css: c, js: j };
+        setHtml(h);
+        setCss(c);
+        setJs(j);
         setLmsProjectId(project.id);
       }
     };
@@ -136,6 +141,7 @@ function LaunguageManager() {
 
     const editorUrl =
       typeof window !== "undefined" ? `${window.location.origin}${window.location.pathname}` : "";
+    const { html: h, css: c, js: j } = latestRef.current;
     const body = {
       topic_id: topicId,
       course_level_id: levelId,
@@ -143,7 +149,7 @@ function LaunguageManager() {
       project_name: topicName && String(topicName).trim() ? topicName : "Project",
       editor_type: "inter",
       editor_url: editorUrl,
-      project_data: { html: html || "", css: css || "", js: js || "" },
+      project_data: { html: h || "", css: c || "", js: j || "" },
       project_type: "html",
       file_format: "html",
       is_autosaved: true,
@@ -163,7 +169,7 @@ function LaunguageManager() {
         setLmsSaveStatus("error");
         setTimeout(() => setLmsSaveStatus(null), 3000);
       });
-  }, [lmsContext, lmsProjectId, html, css, js]);
+  }, [lmsContext, lmsProjectId]);
 
   const scheduleLmsSave = useCallback(() => {
     if (!lmsContext) return;
@@ -178,14 +184,17 @@ function LaunguageManager() {
   }, []);
 
   const handleHtmlChange = (val) => {
+    latestRef.current.html = val;
     setHtml(val);
     if (lmsContext) scheduleLmsSave();
   };
   const handleCssChange = (val) => {
+    latestRef.current.css = val;
     setCss(val);
     if (lmsContext) scheduleLmsSave();
   };
   const handleJsChange = (val) => {
+    latestRef.current.js = val;
     setJs(val);
     if (lmsContext) scheduleLmsSave();
   };
