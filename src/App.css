@@ -15,15 +15,77 @@ pre {
   background-color: rgb(127, 62, 187) !important;
 }
 
-/* Editor layout: code editors on left, live preview on right, resizable, responsive */
+/* Editor layout: full-size, code editors on left, live preview on right */
 .editor-layout {
   display: flex;
   flex-direction: row;
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding-bottom: 36px; /* space for fixed footer */
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  padding: 0;
   width: 100%;
   overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* Mobile view toggle: Code | Split | Preview - visible on tablet/mobile */
+.mobile-view-toggle {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #1a1d21;
+  padding: 8px 12px;
+  gap: 6px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #2c2c32;
+  padding-top: calc(8px + env(safe-area-inset-top, 0));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.mobile-view-toggle button {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #3d3d4a;
+  background: #252535;
+  color: #9ca3af;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-view-toggle button:hover {
+  background: #2c2c32;
+  color: #fafafa;
+}
+.mobile-view-toggle button.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+.mobile-view-toggle button i {
+  font-size: 1em;
+}
+
+.editors-panel,
+.preview-panel {
+  transition: flex 0.2s ease, min-width 0.2s ease;
+}
+.editors-panel.hidden,
+.preview-panel.hidden {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden;
+  flex: 0 0 0 !important;
 }
 
 .editors-panel {
@@ -31,28 +93,29 @@ pre {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: #202429;
+  background: linear-gradient(180deg, #1e2126 0%, #181b1f 100%);
 }
 
-/* Resize handle between editor and preview */
+/* Resize handle - touch-friendly */
 .resize-handle {
   flex-shrink: 0;
   background: #2c2c32;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.15s;
 }
-.resize-handle:hover {
-  background: #569cd6;
+.resize-handle:hover,
+.resize-handle:active {
+  background: #3b82f6;
 }
 .resize-handle-vertical {
-  width: 6px;
+  width: 8px;
+  min-width: 8px;
   cursor: ew-resize;
-  min-width: 6px;
 }
 .resize-handle-horizontal {
-  height: 6px;
-  cursor: ns-resize;
-  min-height: 6px;
+  height: 8px;
+  min-height: 8px;
   flex-shrink: 0;
+  cursor: ns-resize;
 }
 
 .editor-toolbar {
@@ -60,7 +123,7 @@ pre {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  padding: 8px 12px;
+  padding: 10px 14px;
   background: #252535;
   color: #fafafa;
   font-size: 14px;
@@ -69,30 +132,41 @@ pre {
 }
 .editor-toolbar .toolbar-label {
   margin-right: 4px;
+  font-weight: 500;
+  color: #9ca3af;
 }
 .editor-toolbar button {
-  padding: 4px 12px;
+  padding: 8px 14px;
   font-size: 13px;
   border: 1px solid #4d4d5c;
   background: #2c2c32;
   color: #fafafa;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  -webkit-tap-highlight-color: transparent;
 }
 .editor-toolbar button:hover {
   background: #3d3d4a;
 }
 .editor-toolbar button.active {
-  background: #569cd6;
-  border-color: #569cd6;
+  background: #3b82f6;
+  border-color: #3b82f6;
 }
 
 .lms-save-status {
-  font-size: 13px;
+  font-size: 12px;
   color: #9ca3af;
   margin-left: auto;
-  min-width: 100px;
+  min-width: 90px;
   text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
 }
 .lms-save-status.saving {
   color: #fbbf24;
@@ -126,7 +200,7 @@ pre {
 .editor-slot.html-slot,
 .editor-slot.css-slot,
 .editor-slot.js-slot {
-  min-height: 100px;
+  min-height: 80px;
 }
 .editor-slot.css-slot,
 .editor-slot.js-slot {
@@ -134,40 +208,53 @@ pre {
 }
 
 .preview-panel {
-  min-width: 150px;
+  min-width: 180px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: #fff;
+  background: #ffffff;
+  border-left: 1px solid #e5e7eb;
 }
 
 .preview-heading {
-  padding: 10px 16px;
-  font-size: 1rem;
+  padding: 12px 16px;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #1f2937;
-  background-color: #f3f4f6;
+  background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
   border-bottom: 1px solid #e5e7eb;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Tablet: side-by-side with tighter layout */
+/* Tablet */
 @media (max-width: 1024px) {
+  .editor-layout {
+    padding-top: 52px;
+  }
+  .mobile-view-toggle {
+    display: flex;
+  }
   .editor-toolbar {
-    padding: 6px 10px;
+    padding: 8px 12px;
     font-size: 13px;
   }
   .editor-toolbar button {
-    padding: 4px 10px;
+    padding: 6px 12px;
     font-size: 12px;
   }
   .preview-heading {
-    padding: 8px 12px;
+    padding: 10px 14px;
     font-size: 0.9rem;
+  }
+  .CodeMirror {
+    font-size: 13px !important;
   }
 }
 
-/* Mobile: stack editors above preview */
+/* Mobile: stack layout, larger touch targets */
 @media (max-width: 768px) {
   .footer {
     display: none;
@@ -175,50 +262,62 @@ pre {
   .editor-layout {
     flex-direction: column;
     padding-bottom: 0;
+    padding-top: 56px;
   }
-  .editors-panel {
+  .editors-panel:not(.hidden) {
     flex: 1 1 auto !important;
-    min-height: 40vh;
-    min-height: 40dvh;
+    min-height: 35vh;
+    min-height: 35dvh;
   }
-  .preview-panel {
+  .preview-panel:not(.hidden) {
     flex: 1 1 auto !important;
-    min-height: 40vh;
-    min-height: 40dvh;
+    min-height: 35vh;
+    min-height: 35dvh;
   }
   .resize-handle-vertical {
     width: 100%;
-    height: 8px;
-    min-height: 8px;
+    height: 10px;
+    min-height: 10px;
     cursor: ns-resize;
+  }
+  .resize-handle-horizontal {
+    height: 10px;
+    min-height: 10px;
   }
   .editor-toolbar {
     flex-wrap: wrap;
-    padding: 8px 10px;
+    padding: 10px 12px;
   }
   .editor-toolbar .toolbar-label {
-    width: 100%;
-    margin-bottom: 4px;
+    width: auto;
+  }
+  .mobile-view-toggle button {
+    padding: 12px 16px;
+    font-size: 14px;
   }
 }
 
-/* Small mobile: larger touch targets */
+/* Small mobile: extra touch-friendly */
 @media (max-width: 480px) {
   .editor-toolbar button {
-    padding: 8px 14px;
+    padding: 10px 16px;
     font-size: 14px;
+    min-height: 44px;
   }
   .resize-handle-horizontal {
-    min-height: 10px;
-    height: 10px;
+    min-height: 12px;
+    height: 12px;
   }
   .resize-handle-vertical {
-    min-height: 10px;
-    height: 10px;
+    min-height: 12px;
+    height: 12px;
   }
   .editor-slot .editor-text {
-    padding: 8px 10px !important;
+    padding: 10px 12px !important;
     font-size: 1rem;
+  }
+  .CodeMirror {
+    font-size: 14px !important;
   }
 }
 
@@ -247,7 +346,7 @@ pre {
   flex: 1;
   border: 0;
   width: 100%;
-  min-height: 200px;
+  min-height: 0;
   background-color: white;
 }
 
@@ -264,7 +363,7 @@ pre {
 
 /* VS Code–like syntax highlighting for CodeMirror */
 .CodeMirror {
-  font-size: 14px !important;
+  font-size: 22px !important;
   background-color: #1e1e2c !important;
 }
 .CodeMirror-gutters {

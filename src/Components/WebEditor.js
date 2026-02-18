@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import Editor from "./WebEditor/Editor";
-import Footer from "./Footer";
 import ResizeHandle from "./ResizeHandle";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
@@ -27,8 +26,10 @@ function getLmsParams() {
   const topicName = params.get("topicName") ? decodeURIComponent(params.get("topicName")) : null;
   const levelId = params.get("levelId");
   const projectId = params.get("savedProjectId") || params.get("projectId");
+  const teamMemberIdsRaw = params.get("teamMemberIds");
+  const teamMemberIds = teamMemberIdsRaw ? teamMemberIdsRaw.split(",").map((id) => id.trim()).filter(Boolean) : [];
   if (!apiBase || !authToken || !studentId || !courseId || !topicId || !levelId) return null;
-  return { apiBase, authToken, studentId, courseId, topicId, topicName: topicName || "Project", levelId, projectId };
+  return { apiBase, authToken, studentId, courseId, topicId, topicName: topicName || "Project", levelId, projectId, teamMemberIds };
 }
 
 function LaunguageManager() {
@@ -44,6 +45,7 @@ function LaunguageManager() {
   const [secondEditor, setSecondEditor] = useState("css");
   const [editorPreviewSplit, setEditorPreviewSplit] = useState(50);
   const [secondEditorPercent, setSecondEditorPercent] = useState(50);
+  const [mobileView, setMobileView] = useState("split");
   const [lmsContext, setLmsContext] = useState(null);
   const [lmsProjectId, setLmsProjectId] = useState(null);
   const [lmsSaveStatus, setLmsSaveStatus] = useState(null);
@@ -130,7 +132,7 @@ function LaunguageManager() {
     saveTimerRef.current = null;
 
     setLmsSaveStatus("saving");
-    const { apiBase, authToken, courseId, topicId, topicName, levelId } = lmsContext;
+    const { apiBase, authToken, courseId, topicId, topicName, levelId, teamMemberIds } = lmsContext;
     const client = axios.create({
       baseURL: apiBase,
       headers: {
@@ -155,6 +157,7 @@ function LaunguageManager() {
       is_autosaved: true,
     };
     if (lmsProjectId) body.project_id = lmsProjectId;
+    if (teamMemberIds && teamMemberIds.length > 0) body.team_member_ids = teamMemberIds;
 
     client
       .post("/student-courses/save-project", body)
@@ -236,33 +239,65 @@ function LaunguageManager() {
     );
   }
 
+  const showCode = mobileView === "code" || mobileView === "split";
+  const showPreview = mobileView === "preview" || mobileView === "split";
+
   return (
     <div className="editor-layout">
+      <div className="mobile-view-toggle" aria-label="View mode">
+        <button
+          className={mobileView === "code" ? "active" : ""}
+          onClick={() => setMobileView("code")}
+          title="Code only"
+        >
+          <i className="fas fa-code" aria-hidden />
+          <span>Code</span>
+        </button>
+        <button
+          className={mobileView === "split" ? "active" : ""}
+          onClick={() => setMobileView("split")}
+          title="Split view"
+        >
+          <i className="fas fa-columns" aria-hidden />
+          <span>Split</span>
+        </button>
+        <button
+          className={mobileView === "preview" ? "active" : ""}
+          onClick={() => setMobileView("preview")}
+          title="Preview only"
+        >
+          <i className="fas fa-eye" aria-hidden />
+          <span>Preview</span>
+        </button>
+      </div>
+
       <div
-        className="editors-panel"
-        style={{ flex: `0 0 ${editorPreviewSplit}%` }}
+        className={`editors-panel ${showCode ? "" : "hidden"}`}
+        style={{ flex: showCode ? `0 0 ${editorPreviewSplit}%` : "0 0 0" }}
       >
         <div className="editor-toolbar">
-          <span className="toolbar-label">Switch editor:</span>
+          <span className="toolbar-label">Editor:</span>
           <button
             className={secondEditor === "css" ? "active" : ""}
             onClick={() => setSecondEditor("css")}
+            aria-pressed={secondEditor === "css"}
           >
-            CSS
+            <i className="fab fa-css3-alt" aria-hidden /> CSS
           </button>
           <button
             className={secondEditor === "js" ? "active" : ""}
             onClick={() => setSecondEditor("js")}
+            aria-pressed={secondEditor === "js"}
           >
-            JavaScript
+            <i className="fab fa-js-square" aria-hidden /> JS
           </button>
-          <span className={`lms-save-status ${lmsSaveStatus || ""}`} style={{ marginLeft: "auto" }}>
+          <span className={`lms-save-status ${lmsSaveStatus || ""}`}>
             {lmsContext ? (
               <>
-                {lmsSaveStatus === "saving" && "Saving…"}
-                {lmsSaveStatus === "saved" && "Saved"}
-                {lmsSaveStatus === "error" && "Save failed"}
-                {!lmsSaveStatus && "Auto-save on"}
+                {lmsSaveStatus === "saving" && <><i className="fas fa-spinner fa-spin" aria-hidden /> Saving…</>}
+                {lmsSaveStatus === "saved" && <><i className="fas fa-check" aria-hidden /> Saved</>}
+                {lmsSaveStatus === "error" && <><i className="fas fa-exclamation-triangle" aria-hidden /> Save failed</>}
+                {!lmsSaveStatus && <><i className="fas fa-cloud" aria-hidden /> Auto-save</>}
               </>
             ) : (
               <span className="lms-save-status-hint">Open from Courses to save</span>
@@ -276,7 +311,7 @@ function LaunguageManager() {
             style={{ flex: `1 1 ${100 - secondEditorPercent}%`, minHeight: 0 }}
           >
             <div className="editor-text">
-              <i className="fab fa-html5"> </i> HTML
+              <i className="fab fa-html5" aria-hidden /> HTML
             </div>
             <Editor launguage="xml" value={html} onChange={handleHtmlChange} />
           </div>
@@ -290,14 +325,14 @@ function LaunguageManager() {
             {secondEditor === "css" ? (
               <>
                 <div className="editor-text">
-                  <i className="fab fa-css3-alt"></i> CSS
+                  <i className="fab fa-css3-alt" aria-hidden /> CSS
                 </div>
                 <Editor launguage="css" value={css} onChange={handleCssChange} />
               </>
             ) : (
               <>
                 <div className="editor-text">
-                  <i className="fab fa-js-square"></i> JavaScript
+                  <i className="fab fa-js-square" aria-hidden /> JavaScript
                 </div>
                 <Editor launguage="javascript" value={js} onChange={handleJsChange} />
               </>
@@ -306,17 +341,20 @@ function LaunguageManager() {
         </div>
       </div>
 
-      <ResizeHandle orientation="vertical" onResize={handleEditorPreviewResize} />
+      {showCode && showPreview && (
+        <ResizeHandle orientation="vertical" onResize={handleEditorPreviewResize} />
+      )}
 
       <div
-        className="preview-panel"
-        style={{ flex: `1 1 ${100 - editorPreviewSplit}%` }}
+        className={`preview-panel ${showPreview ? "" : "hidden"}`}
+        style={{ flex: showPreview ? `1 1 ${mobileView === "preview" ? "100%" : `${100 - editorPreviewSplit}%`}` : "0 0 0" }}
       >
-        <div className="preview-heading">Live Preview</div>
+        <div className="preview-heading">
+          <i className="fas fa-desktop" aria-hidden /> Live Preview
+        </div>
         <iframe srcDoc={srcDoc} className="output-pane" allowFullScreen title="Preview" />
       </div>
 
-      <Footer />
     </div>
   );
 }

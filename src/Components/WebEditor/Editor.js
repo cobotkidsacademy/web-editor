@@ -43,7 +43,7 @@ function Editor(props) {
     scrollbarStyle: "null",
     lineWrapping: true,
     indentUnit: 2,
-    autoCloseTags: true,
+    autoCloseTags: isHtml ? { indentTags: [] } : true,
     matchTags: true,
     autoCloseBrackets: true,
     matchBrackets: true,
